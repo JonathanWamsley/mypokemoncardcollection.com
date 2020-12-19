@@ -11,22 +11,21 @@ import (
 var homeView *views.View
 var aboutView *views.View
 
+// A helper function that panics of any error
+func must(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	err := homeView.Template.ExecuteTemplate(w,
-		homeView.Layout, nil)
-	if err != nil {
-	  panic(err)
-	}
+	must(homeView.Render(w, nil))
   }
   
   func about(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	err := aboutView.Template.ExecuteTemplate(w,
-		aboutView.Layout, nil)
-	if err != nil {
-	  panic(err)
-	}
+	must(aboutView.Render(w, nil))
   }
 
 func main() {
