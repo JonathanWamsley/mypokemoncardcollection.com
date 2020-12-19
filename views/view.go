@@ -2,6 +2,12 @@ package views
 
 import (
 	"html/template"
+	"path/filepath"
+)
+
+var (
+	LayoutDir string = "views/layouts/"
+	TemplateExt string = ".gohtml"
 )
 
 type View struct {
@@ -13,10 +19,7 @@ type View struct {
 // attached as well to the resulting View
 func NewView(layout string, files ...string) *View {
 	// all new files will add the footer
-	files = append(files, 
-		"views/layouts/footer.gohtml",
-		"views/layouts/bootstrap.gohtml",
-		"views/layouts/navbar.gohtml")
+	files = append(files, layoutFiles()...)
 	t, err := template.ParseFiles(files...)
 	if err != nil {
 		panic(err)
@@ -26,4 +29,12 @@ func NewView(layout string, files ...string) *View {
 		Template: t,
 		Layout: layout,
 	}
+}
+
+func layoutFiles() []string {
+	files, err := filepath.Glob(LayoutDir + "*" + TemplateExt)
+	if err != nil {
+		panic(err)
+	}
+	return files
 }
