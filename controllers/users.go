@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"mypokemoncardcollection.com/views"
+
+	"github.com/gorilla/schema"
 )
 
 type Users struct {
@@ -17,6 +19,11 @@ func NewUsers() *Users {
 	}
 }
 
+type SignupForm struct {
+	Email string `schema:"email"`
+	Password string `schema:"password"`
+}
+
 // GET /signup
 func (u *Users) New(w http.ResponseWriter, r *http.Request) {
 	if err := u.NewView.Render(w, nil); err != nil {
@@ -26,5 +33,14 @@ func (u *Users) New(w http.ResponseWriter, r *http.Request) {
 
 // POST /signup
 func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "this is a temp response")
+	if err := r.ParseForm(); err != nil {
+		panic(err)
+	}
+
+	dec := schema.NewDecoder()
+	form := SignupForm{}
+	if err := dec.Decode(&form, r.PostForm); err != nil {
+		panic(err)
+	}
+	fmt.Fprintln(w, form)
 }
