@@ -4,13 +4,13 @@ import (
 	"net/http"
 
 	"mypokemoncardcollection.com/views"
+	"mypokemoncardcollection.com/controllers"
 
 	"github.com/gorilla/mux"
 )
 var (
 	homeView *views.View
 	aboutView *views.View
-	signupView *views.View
 )
 
 // A helper function that panics of any error
@@ -30,19 +30,16 @@ func home(w http.ResponseWriter, r *http.Request) {
 	must(aboutView.Render(w, nil))
   }
 
-  func signup(w http.ResponseWriter, r *http.Request) {
-	  w.Header().Set("Content-Type", "text/html")
-	  must(signupView.Render(w, nil))
-  }
 
 func main() {
 	homeView = views.NewView("bootstrap", "views/home.gohtml")
 	aboutView = views.NewView("bootstrap" ,"views/about.gohtml")
-	signupView = views.NewView("bootstrap", "views/signup.gohtml")
+	usersController := controllers.NewUsers()
+	
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", home)
 	r.HandleFunc("/about", about)
-	r.HandleFunc("/signup", signup)
+	r.HandleFunc("/signup", usersController.New)
 	http.ListenAndServe(":3000", r)
 }
