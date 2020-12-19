@@ -1,23 +1,36 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
+
+	"mypokemoncardcollection.com/views"
 
 	"github.com/gorilla/mux"
 )
 
+var homeView *views.View
+var aboutView *views.View
+
 func home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	fmt.Fprintln(w, "<h1>Pokemon cards main page</h1>")
-}
-
-func about(w http.ResponseWriter, r *http.Request) {
+	err := homeView.Template.Execute(w, nil)
+	if err != nil {
+	  panic(err)
+	}
+  }
+  
+  func about(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	fmt.Fprintln(w, "<h1>MyPokemonCardCollection is a place to track what pokemon cards you have collected</h1>")
-}
+	err := aboutView.Template.Execute(w, nil)
+	if err != nil {
+	  panic(err)
+	}
+  }
 
 func main() {
+	homeView = views.NewView("views/home.gohtml")
+	aboutView = views.NewView("views/about.gohtml")
+
 	r := mux.NewRouter()
 	r.HandleFunc("/", home)
 	r.HandleFunc("/about", about)

@@ -1,4 +1,4 @@
-module mypokemoncollection.com
+module mypokemoncardcollection.com
 
 go 1.15
 
