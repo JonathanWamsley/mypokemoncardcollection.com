@@ -23,3 +23,40 @@ There are three main folders to separate code responsibility
 3. Models
     - responsible for interacting with raw data in the database, APIs or other services
     - handles storing data objects as well as creating, reading, updating, deleting data
+
+### Models
+
+
+- Will use Model Struct using the gorm.Model, an ORM object-relational-mapping
+- Will use ModleServices as a type that provies methods for querying, creating, and updating the model
+    - uses the gorm.DB pointer
+    - has an interface showing what methods it has access to
+
+- User Credentials Model
+    - description
+        - holds user login details
+    - columns
+        - user id
+        - email
+        - hash pw
+        - password (not stored)
+        - remember (not stored)
+        - remember hashed
+
+- User Collection Model
+    - description
+        - holds what pokemon cards the user owns
+    - columns
+        - user id
+        - card id
+        - card set
+
+- Pokemon Collection Model
+    - description
+        - holds all the pokemon cards
+    - columns
+        - card id
+        - card name
+        - card number
+        - card set
+        - image path
