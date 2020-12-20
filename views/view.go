@@ -1,20 +1,20 @@
 package views
 
 import (
-	"net/http"
 	"html/template"
+	"net/http"
 	"path/filepath"
 )
 
 var (
-	LayoutDir string = "views/layouts/"
+	LayoutDir   string = "views/layouts/"
 	TemplateDir string = "views/"
 	TemplateExt string = ".gohtml"
 )
 
 type View struct {
 	Template *template.Template
-	Layout string
+	Layout   string
 }
 
 // NewView creates a new view with common layout files
@@ -29,9 +29,9 @@ func NewView(layout string, files ...string) *View {
 		panic(err)
 	}
 
-	return &View {
+	return &View{
 		Template: t,
-		Layout: layout,
+		Layout:   layout,
 	}
 }
 

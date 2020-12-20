@@ -1,8 +1,8 @@
 package main
 
 import (
-	"net/http"
 	"fmt"
+	"net/http"
 
 	"mypokemoncardcollection.com/controllers"
 	"mypokemoncardcollection.com/models"
@@ -17,7 +17,7 @@ const (
 	user     = "postgres"
 	password = "password"
 	dbname   = "mypokemoncardcollection_dev"
-  )
+)
 
 func main() {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -29,10 +29,10 @@ func main() {
 	}
 	defer us.Close()
 	us.AutoMigrate()
-	
+
 	staticController := controllers.NewStatic()
 	usersController := controllers.NewUsers(us)
-	
+
 	r := mux.NewRouter()
 	r.Handle("/", staticController.Home).Methods("GET")
 	r.Handle("/about", staticController.About).Methods("GET")

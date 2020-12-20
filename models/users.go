@@ -8,13 +8,13 @@ import (
 )
 
 var (
-	ErrNotFound = errors.New("models: resource not found")
+	ErrNotFound  = errors.New("models: resource not found")
 	ErrInvalidId = errors.New("models: ID provided was invalid")
 )
 
 type User struct {
 	gorm.Model
-	Name string
+	Name  string
 	Email string `gorm:"not null;unique_index`
 }
 
@@ -54,7 +54,7 @@ func (us *UserService) AutoMigrate() error {
 	return nil
 }
 
-func (us *UserService) DestructiveReset() error{
+func (us *UserService) DestructiveReset() error {
 	err := us.db.DropTableIfExists(&User{}).Error
 	if err != nil {
 		return err

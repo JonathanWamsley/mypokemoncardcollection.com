@@ -5,7 +5,7 @@ import (
 )
 
 type Static struct {
-	Home *views.View
+	Home  *views.View
 	About *views.View
 }
 
