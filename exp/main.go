@@ -40,4 +40,10 @@ func main() {
     panic(err)
   }
   fmt.Println(foundUser)
+
+  foundUser, err = us.ByEmail("test@email.com")
+  if err != nil {
+    panic(err)
+  }
+  fmt.Println(foundUser)
 }
