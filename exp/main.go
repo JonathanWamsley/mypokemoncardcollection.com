@@ -39,11 +39,32 @@ func main() {
   if err != nil {
     panic(err)
   }
-  fmt.Println(foundUser)
+  fmt.Println("found by id ",foundUser)
 
   foundUser, err = us.ByEmail("test@email.com")
   if err != nil {
     panic(err)
   }
-  fmt.Println(foundUser)
+  fmt.Println("found by email ", foundUser)
+
+  user.Name = "updated name"
+  err = us.Update(&user)
+  if err != nil {
+    panic(err)
+  }
+
+  foundUser, err = us.ByEmail("test@email.com")
+  if err != nil {
+    panic(err)
+  }
+  fmt.Println("found by email after updating name ", foundUser)
+
+  if err := us.Delete(foundUser.ID); err != nil {
+	panic(err)
+  }
+  foundUser, err = us.ByID(foundUser.ID)
+  if err != models.ErrNotFound {
+	panic("user was not deleted!")
+  }
+  fmt.Println("found nothing after delete ", foundUser)
 }
