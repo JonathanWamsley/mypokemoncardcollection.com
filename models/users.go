@@ -13,6 +13,7 @@ var userPwPepper = "secret-random-string"
 var (
 	ErrNotFound  = errors.New("models: resource not found")
 	ErrInvalidId = errors.New("models: ID provided was invalid")
+	ErrInvalidPassword = errors.New("models: Incorrect password provided")
 )
 
 type User struct {
@@ -104,4 +105,26 @@ func (us *UserService) Delete(id uint) error {
 	}
 	user := User{Model: gorm.Model{ID: id}}
 	return us.db.Delete(&user).Error
+}
+
+func (us *UserService) Authenticate(email, password string) (*User, error) {
+	// see if user exist: else invalid user
+	// see if users hashed password is the same has the hashed password: else invalid password
+	// if pass and email good, return nil, else return err
+	foundUser, err := us.ByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+
+	err = bcrypt.CompareHashAndPassword(
+		[]byte(foundUser.PasswordHash),
+		[]byte(password + userPwPepper))
+	switch err {
+	case nil:
+		return foundUser, nil
+	case bcrypt.ErrMismatchedHashAndPassword:
+		return nil, ErrInvalidPassword
+	default:
+		return nil, err
+	}
 }
