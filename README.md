@@ -80,18 +80,18 @@ The webapp will be able to
     - redirects to the latest pokemon set gallery/latest
     - show the pokemon cards based on set
 
-- /gallery/set-name
+- /gallery/{set-name}
     - get
     - drop down menu to change
     - shows the pokemon cards from set
 
-- /gallery/set-name/mark-id
+- /gallery/{set-name}/mark-{id}
     - post
     - returns gallery of set name with update id marked
         - js change, no need to reload page
     - marks card id for the user as being owned
 
-- /gallery/set-name/unmark-id
+- /gallery/{set-name}/unmark-{id}
     - post
     - returns gallery of set name with update id unmarked
         - js change, no need to reload page
