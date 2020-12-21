@@ -11,9 +11,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// secrets **** to be moved to .config/.secrets ******
 var userPwPepper = "secret-random-string"
 var hmacSecretKey = "secret-hmac-key"
 
+
+// querry errors ************************
 var (
 	ErrNotFound  = errors.New("models: resource not found")
 	ErrInvalidId = errors.New("models: ID provided was invalid")
@@ -29,6 +32,8 @@ type User struct {
 	Remember string `gorm"-"`
 	RememberHash string `gorm"not null;unique_index"`
 }
+
+// UserService creation and handling *****************************
 
 type UserService struct {
 	db *gorm.DB
@@ -52,16 +57,6 @@ func (us *UserService) Close() error {
 	return us.db.Close()
 }
 
-func (us *UserService) ByID(id uint) (*User, error) {
-	var user User
-	db := us.db.Where("id = ?", id)
-	err := first(db, &user)
-	if err != nil {
-		return nil, err
-	}
-	return &user, nil
-}
-
 func (us *UserService) AutoMigrate() error {
 	if err := us.db.AutoMigrate(&User{}).Error; err != nil {
 		return err
@@ -77,6 +72,58 @@ func (us *UserService) DestructiveReset() error {
 	return us.AutoMigrate()
 }
 
+
+func (us *UserService) Authenticate(email, password string) (*User, error) {
+	// see if user exist: else invalid user
+	// see if users hashed password is the same has the hashed password: else invalid password
+	// if pass and email good, return nil, else return err
+	foundUser, err := us.ByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+
+	err = bcrypt.CompareHashAndPassword(
+		[]byte(foundUser.PasswordHash),
+		[]byte(password + userPwPepper))
+	switch err {
+	case nil:
+		return foundUser, nil
+	case bcrypt.ErrMismatchedHashAndPassword:
+		return nil, ErrInvalidPassword
+	default:
+		return nil, err
+	}
+}
+
+
+// Queries Selection *********************************
+
+func first(db *gorm.DB, dst interface{}) error {
+	err := db.First(dst).Error
+	if err == gorm.ErrRecordNotFound {
+		return ErrNotFound
+	}
+	return err
+}
+
+func (us *UserService) ByID(id uint) (*User, error) {
+	var user User
+	db := us.db.Where("id = ?", id)
+	err := first(db, &user)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (us *UserService) ByEmail(email string) (*User, error) {
+	var user User
+	db := us.db.Where("email = ?", email)
+	err := first(db, &user)
+	return &user, err
+}
+
+// Queries crud *************************
 func (us *UserService) Create(user *User) error {
 	pwBytes := []byte(user.Password + userPwPepper)
 	hashedBytes, err := bcrypt.GenerateFromPassword(
@@ -99,21 +146,6 @@ func (us *UserService) Create(user *User) error {
 	return us.db.Create(user).Error
 }
 
-func first(db *gorm.DB, dst interface{}) error {
-	err := db.First(dst).Error
-	if err == gorm.ErrRecordNotFound {
-		return ErrNotFound
-	}
-	return err
-}
-
-func (us *UserService) ByEmail(email string) (*User, error) {
-	var user User
-	db := us.db.Where("email = ?", email)
-	err := first(db, &user)
-	return &user, err
-}
-
 func (us *UserService) Update(user *User) error {
 	if user.Remember != "" {
 		user.RememberHash = us.hmac.Hash(user.Remember)
@@ -127,26 +159,4 @@ func (us *UserService) Delete(id uint) error {
 	}
 	user := User{Model: gorm.Model{ID: id}}
 	return us.db.Delete(&user).Error
-}
-
-func (us *UserService) Authenticate(email, password string) (*User, error) {
-	// see if user exist: else invalid user
-	// see if users hashed password is the same has the hashed password: else invalid password
-	// if pass and email good, return nil, else return err
-	foundUser, err := us.ByEmail(email)
-	if err != nil {
-		return nil, err
-	}
-
-	err = bcrypt.CompareHashAndPassword(
-		[]byte(foundUser.PasswordHash),
-		[]byte(password + userPwPepper))
-	switch err {
-	case nil:
-		return foundUser, nil
-	case bcrypt.ErrMismatchedHashAndPassword:
-		return nil, ErrInvalidPassword
-	default:
-		return nil, err
-	}
 }
