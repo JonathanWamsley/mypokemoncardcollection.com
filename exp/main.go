@@ -5,6 +5,7 @@ import (
 
 	"mypokemoncardcollection.com/models"
 	"mypokemoncardcollection.com/rand"
+	"mypokemoncardcollection.com/hash"
 
 	_ "github.com/lib/pq"
 )
@@ -75,6 +76,12 @@ func expHMAC(){
 	fmt.Println(rand.RememberToken())
 }
 
+func expHash(){
+	hmac := hash.NewHMAC("my-secret-key")
+	fmt.Println("got      =", hmac.Hash("this is my string to hash"))
+	fmt.Println("expected = 4waUFc1cnuxoM2oUOJfpGZLGP1asj35y7teuweSFgPY=")
+}
+
 func main(){
-	expHMAC()
+	expHash()
 }
