@@ -60,3 +60,58 @@ There are three main folders to separate code responsibility
         - card number
         - card set
         - image path
+
+
+### Design pages
+
+The webapp will be able to
+- display pokemon cards in columns by set
+- usec can change the set
+- user can add or delete cards owned
+- login/sign up
+
+- /
+    - get
+    - home page
+    - description and relevant opening information on the app
+
+- /gallery
+    - get
+    - redirects to the latest pokemon set gallery/latest
+    - show the pokemon cards based on set
+
+- /gallery/set-name
+    - get
+    - drop down menu to change
+    - shows the pokemon cards from set
+
+- /gallery/set-name/mark-id
+    - post
+    - returns gallery of set name with update id marked
+        - js change, no need to reload page
+    - marks card id for the user as being owned
+
+- /gallery/set-name/unmark-id
+    - post
+    - returns gallery of set name with update id unmarked
+        - js change, no need to reload page
+    - marks card id for the user as being owned
+
+- /login
+    - post
+    - do the login
+
+- /login
+    - get
+    - show login page
+
+- /register
+    - get
+    - show register page
+
+- /register
+    - post
+    - add user to db
+
+- /change
+    - change password
