@@ -8,6 +8,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var userPwPepper = "secret-random-string"
+
 var (
 	ErrNotFound  = errors.New("models: resource not found")
 	ErrInvalidId = errors.New("models: ID provided was invalid")
@@ -66,8 +68,9 @@ func (us *UserService) DestructiveReset() error {
 }
 
 func (us *UserService) Create(user *User) error {
+	pwBytes := []byte(user.Password + userPwPepper)
 	hashedBytes, err := bcrypt.GenerateFromPassword(
-		[]byte(user.Password), bcrypt.DefaultCost)
+		[]byte(pwBytes), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
