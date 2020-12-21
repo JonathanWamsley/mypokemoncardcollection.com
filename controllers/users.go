@@ -50,5 +50,4 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Fprintln(w, "user is", user)
-	fmt.Fprintln(w, "Password is", form.Password)
 }
