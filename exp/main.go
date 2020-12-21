@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"mypokemoncardcollection.com/models"
+	"mypokemoncardcollection.com/rand"
 
 	_ "github.com/lib/pq"
 )
@@ -16,7 +17,7 @@ const (
 	dbname   = "mypokemoncardcollection_dev"
 )
 
-func main() {
+func expQueries() {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
@@ -67,4 +68,13 @@ func main() {
 		panic("user was not deleted!")
 	}
 	fmt.Println("found nothing after delete ", foundUser)
+}
+
+func expHMAC(){
+	fmt.Println(rand.String(10))
+	fmt.Println(rand.RememberToken())
+}
+
+func main(){
+	expHMAC()
 }
