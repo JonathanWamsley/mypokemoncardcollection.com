@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 
+	"mypokemoncardcollection.com/hash"
 	"mypokemoncardcollection.com/rand"
 
 	"github.com/jinzhu/gorm"
@@ -11,6 +12,7 @@ import (
 )
 
 var userPwPepper = "secret-random-string"
+var hmacSecretKey = "secret-hmac-key"
 
 var (
 	ErrNotFound  = errors.New("models: resource not found")
@@ -30,6 +32,7 @@ type User struct {
 
 type UserService struct {
 	db *gorm.DB
+	hmac hash.HMAC
 }
 
 func NewUserService(connectionInfo string) (*UserService, error) {
@@ -38,8 +41,10 @@ func NewUserService(connectionInfo string) (*UserService, error) {
 		return nil, err
 	}
 	db.LogMode(true)
+	hmac := hash.NewHMAC(hmacSecretKey)
 	return &UserService{
 		db: db,
+		hmac: hmac,
 	}, nil
 }
 
@@ -89,6 +94,7 @@ func (us *UserService) Create(user *User) error {
 		}
 		user.Remember = token
 	}
+	user.RememberHash = us.hmac.Hash(user.Remember)
 	
 	return us.db.Create(user).Error
 }
@@ -109,6 +115,9 @@ func (us *UserService) ByEmail(email string) (*User, error) {
 }
 
 func (us *UserService) Update(user *User) error {
+	if user.Remember != "" {
+		user.RememberHash = us.hmac.Hash(user.Remember)
+	}
 	return us.db.Save(user).Error
 }
 
