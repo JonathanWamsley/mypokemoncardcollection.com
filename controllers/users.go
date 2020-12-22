@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"fmt"
-	"mypokemoncardcollection.com/models"
 	"net/http"
-
+	
+	"mypokemoncardcollection.com/models"
+	"mypokemoncardcollection.com/rand"
 	"mypokemoncardcollection.com/views"
 )
 
@@ -52,7 +53,13 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Fprintln(w, "user is", user)
+	
+	err = u.signIn(w, &user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return 
+	}
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 type LoginForm struct {
@@ -79,10 +86,34 @@ func (u *Users) Login(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	}
-	cookie := http.Cookie{
-		Name: "email",
-		Value: user.Email,
+	err = u.signIn(w, user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-	http.SetCookie(w, &cookie)
-	fmt.Fprintln(w, user)
+	
+	http.Redirect(w, r, "/", http.StatusFound)
+}
+
+
+func (u *Users) signIn(w http.ResponseWriter, user *models.User) error {
+	if user.Remember == "" {
+		token, err := rand.RememberToken()
+		if err != nil {
+			return err
+		}
+		user.Remember = token
+		err = u.us.Update(user)
+		if err != nil {
+			return err
+		}
+	}
+
+		cookie := http.Cookie {
+			Name: "remember_token",
+			Value: user.Remember,
+		}
+		http.SetCookie(w, &cookie)
+		return nil
+	
 }
